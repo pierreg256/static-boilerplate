@@ -4,7 +4,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "AzureWebJobsStorage": "",
     "COSMOS_ENDPOINT": "https://staticdemo001.documents.azure.com:443/",
-    "COSMOS_KEY": "NfigmR7vnRF8zNu66ByZOx3KrghUNbYwQVXDGg4Nxyk8gwFnWvqGi9QHH2nwPU35yTMgVnPUvMZZ94pEqIo9MA==",
+    "COSMOS_KEY": "",
     "COSMOS_DB": "staticwebappdb",
     "COSMOS_CONTAINER": "objects"
   }
