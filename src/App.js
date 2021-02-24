@@ -2,11 +2,8 @@ import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
-function App() {
-  const response = await fetch("/api/user");
-  const payload = await response.json();
-  const { clientPrincipal } = payload;
-  console.log(payload)
+function App () {
+
   return (
     <div className="App">
       <header className="App-header">
