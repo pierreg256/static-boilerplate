@@ -39,7 +39,9 @@ class CosmosDataSource extends DataSource {
    * have to be. If the user is already on the context, it will use that user
    * instead
    */
-  async createItem({ typeName, item } = {}) {
+  async createItem({ typeName, item, user } = {}) {
+    if (!user)
+      throw new Error("a user is required to create on object in the DB");
     const { database } = await this.client.databases.createIfNotExists({
       id: databaseName,
     });
@@ -50,13 +52,35 @@ class CosmosDataSource extends DataSource {
     item._typeId = item.id;
     item.id = this.createUid(typeName, item);
     item.created = new Date().toISOString();
-    item.created_by = "NOT_IMPLEMENTED";
+    item.created_by = user.id;
     item.modified = new Date().toISOString();
-    item.modified_by = "NOT_IMPLEMENTED";
+    item.modified_by = user.id;
     const { resource } = await container.items.create(item);
     //console.log(resource);
     resource.id = resource._typeId;
     return resource;
+  }
+
+  async createOrUpdateUser({
+    identityProvider,
+    userId,
+    userDetails,
+    userRoles,
+  }) {
+    const id = `${identityProvider}-${userId}`;
+    const user = await this.getItemById({ typeName: "User", id });
+    if (user) return user;
+    const item = {
+      id,
+      nick_name: userDetails,
+      user_roles: userRoles,
+    };
+    const newUser = await this.createItem({
+      typeName: "User",
+      item,
+      user: item,
+    });
+    return newUser;
   }
 
   async getItemById({ typeName, id } = {}) {

@@ -2,6 +2,7 @@ const {
   ApolloServer,
   gql,
   SchemaDirectiveVisitor,
+  AuthenticationError,
 } = require("apollo-server-azure-functions");
 const { schemaDirectives } = require("./lib/directives");
 const { resolvers } = require("./lib/resolvers");
@@ -28,11 +29,17 @@ const typeDefs = gql`
 
   scalar Date
 
+  enum Role {
+    anonymous
+    authenticated
+  }
+
   type User @model {
     id: ID!
     nick_name: String
     birthday: Date
     posts: [Post] @relation
+    user_roles: [Role]
   }
 
   type Post @model {
@@ -51,7 +58,7 @@ const typeDefs = gql`
 
   type Mutation {
     addUser(id: ID!, birthday: Date): User
-    addPost(text: String!, userId: ID!): Post
+    addPost(text: String!): Post
   }
 `;
 
@@ -59,6 +66,20 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   dataSources,
+  context: async ({ request }) => {
+    try {
+      const header = request.headers["x-ms-client-principal"];
+      const encoded = Buffer.from(header, "base64");
+      const decoded = encoded.toString("ascii");
+      const clientPrincipal = JSON.parse(decoded);
+      return {
+        clientPrincipal: JSON.parse(decoded),
+      };
+    } catch (err) {
+      console.log(err);
+      throw new AuthenticationError("you must be logged in");
+    }
+  },
   schemaDirectives,
   tracing: true,
 });
