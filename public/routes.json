@@ -1,10 +1,10 @@
 {
-    "routes":[
-        {
-            "route": "/profile",
-            "allowedRoles": ["authenticated"]
-        },
-        {
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
       "route": "/login",
       "serve": "/.auth/login/github"
     },
@@ -16,5 +16,12 @@
       "route": "/logout",
       "serve": "/.auth/logout"
     }
-    ]
+  ],
+  "platformErrorOverrides": [
+    {
+      "errorType": "Unauthenticated",
+      "statusCode": "302",
+      "serve": "/login"
+    }
+  ]
 }
