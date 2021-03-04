@@ -18,18 +18,18 @@ export function AuthenticationProvider({ children }) {
     AUTH_STORAGE_KEY,
     defaultValues
   );
-  const [authCookie] = useCookies(["StaticWebAppsAuthCookie"]);
+  const [cookies] = useCookies();
 
   const login = (principal) => setAuthentication({ principal });
 
   const logout = () => setAuthentication(defaultValues);
 
   const isAuthenticated = () => {
-    return authCookie.StaticWebAppsAuthCookie ? true : false;
+    return cookies.StaticWebAppsAuthCookie ? true : false;
   };
   const values = { ...authentication, isAuthenticated, login, logout };
 
-  console.log(authCookie);
+  console.log(cookies);
 
   return (
     <AuthenticationContext.Provider value={values}>
