@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useAuthentication } from "./components/util/authentication";
 import logo from "./logo.svg";
 import "./App.css";
 
-function App () {
+function App() {
+  const { principal, isAuthenticated } = useAuthentication();
 
+  console.log("is authenticated:", isAuthenticated());
   return (
     <div className="App">
       <header className="App-header">
