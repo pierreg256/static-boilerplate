@@ -3,10 +3,9 @@ import { useSessionStorage } from "react-use";
 import { useCookies } from "react-cookie";
 
 const defaultValues = Object.freeze({
-  isAuthenticated: () => {},
-  principal: null,
   login: () => {},
   logout: () => {},
+  getUser: () => {},
 });
 
 const AUTH_STORAGE_KEY = "authentication";
@@ -18,18 +17,40 @@ export function AuthenticationProvider({ children }) {
     AUTH_STORAGE_KEY,
     defaultValues
   );
-  const [cookies] = useCookies();
+  const [cookies, setCookies] = useCookies();
 
   const login = (principal) => setAuthentication({ principal });
 
   const logout = () => setAuthentication(defaultValues);
 
-  const isAuthenticated = () => {
-    return cookies.StaticWebAppsAuthCookie ? true : false;
-  };
-  const values = { ...authentication, isAuthenticated, login, logout };
+  const getUser = async () => {
+    try {
+      console.log("getUser");
+      const response = await fetch("/.auth/me");
+      const data = await response.json();
+      const user = data.clientPrincipal;
+      getGitHubUserInfo();
 
-  console.log(cookies);
+      return user;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const getGitHubUserInfo = async () => {
+    if (!this.user) return null;
+    try {
+      const response = await fetch(
+        `https://api.github.com/users/${this.user.userDetails}`
+      );
+      const data = await response.json();
+      this.user.details = data;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const values = { ...authentication, login, logout, getUser };
 
   return (
     <AuthenticationContext.Provider value={values}>

@@ -4,9 +4,18 @@ import logo from "./logo.svg";
 import "./App.css";
 
 function App() {
-  const { principal, isAuthenticated } = useAuthentication();
+  const { getUser } = useAuthentication();
+  const [user, setUser] = useState();
 
-  console.log("is authenticated:", isAuthenticated());
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("fetch data");
+      const user = await getUser();
+      console.log(user);
+    };
+
+    fetchData();
+  }, []);
   return (
     <div className="App">
       <header className="App-header">
