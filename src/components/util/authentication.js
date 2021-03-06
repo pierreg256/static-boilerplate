@@ -29,22 +29,21 @@ export function AuthenticationProvider({ children }) {
       const response = await fetch("/.auth/me");
       const data = await response.json();
       const user = data.clientPrincipal;
-      getGitHubUserInfo();
-
-      return user;
+      return getGitHubUserInfo(user);
     } catch (error) {
       return null;
     }
   };
 
-  const getGitHubUserInfo = async () => {
-    if (!this.user) return null;
+  const getGitHubUserInfo = async (user) => {
+    if (!user) return null;
     try {
       const response = await fetch(
-        `https://api.github.com/users/${this.user.userDetails}`
+        `https://api.github.com/users/${user.userDetails}`
       );
       const data = await response.json();
-      this.user.details = data;
+      user.details = data;
+      return user;
     } catch (error) {
       return null;
     }
