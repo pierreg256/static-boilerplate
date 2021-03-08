@@ -4,9 +4,11 @@ const {
   SchemaDirectiveVisitor,
   AuthenticationError,
 } = require("apollo-server-azure-functions");
-const { schemaDirectives } = require("./lib/directives");
+//const { schemaDirectives } = require("./lib/directives");
 const { resolvers } = require("./lib/resolvers");
 const CosmosDataSource = require("./lib/cosmosDataSource");
+const schemaDirectives = require("./lib/graphql-crud/lib/").default;
+const { CosmosStore } = require("./lib/graphql-crud/lib/CosmosStore");
 
 // set up any dataSources our resolvers need
 const dataSources = () => ({
@@ -35,36 +37,34 @@ const typeDefs = gql`
   }
 
   type User @model {
-    id: ID!
     nick_name: String
     birthday: Date
-    posts: [Post] @relation
+    #posts: [Post] @relation
     user_roles: [Role]
   }
 
   type Post @model {
-    id: ID!
     text: String!
-    author_id: ID
-    author: User @relation
+    #author_id: ID
+    #author: User @relation
   }
 
   type Query {
     hello: String
-    users: [User]
-    posts: [Post]
-    user(id: ID!): User
+    #users: [User]
+    #posts: [Post]
+    #user(id: ID!): User
   }
 
   type Mutation {
-    addUser(id: ID!, birthday: Date): User
-    addPost(text: String!): Post
+    #addUser(id: ID!, birthday: Date): User
+    addPostx(text: String!): Post
   }
 `;
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  //resolvers,
   dataSources,
   context: async ({ request }) => {
     try {
@@ -73,10 +73,20 @@ const server = new ApolloServer({
       const decoded = encoded.toString("ascii");
       const clientPrincipal = JSON.parse(decoded);
       return {
+        directives: {
+          model: {
+            store: new CosmosStore({
+              endpoint: process.env.COSMOS_ENDPOINT,
+              key: process.env.COSMOS_KEY,
+              databaseName: process.env.COSMOS_DB,
+              containerName: process.env.COSMOS_CONTAINER,
+            }),
+          },
+        },
         clientPrincipal: JSON.parse(decoded),
       };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new AuthenticationError("you must be logged in");
     }
   },

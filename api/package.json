@@ -12,6 +12,10 @@
   "dependencies": {
     "@azure/cosmos": "^3.9.5",
     "apollo-server-azure-functions": "^2.21.0",
-    "graphql": "^15.5.0"
+    "camel-case": "^4.1.2",
+    "graphql": "^15.5.0",
+    "lodash": "^4.17.21",
+    "pascal-case": "^3.1.2",
+    "pluralize": "^8.0.0"
   }
 }

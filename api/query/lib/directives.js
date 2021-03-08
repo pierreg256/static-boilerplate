@@ -4,6 +4,7 @@ const {
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
+  defaultFieldResolver,
 } = require("graphql");
 const { createHash } = require("crypto");
 const { ISODateScalar } = require("./commons");
@@ -14,7 +15,15 @@ class ModelDirective extends SchemaDirectiveVisitor {
     if (!("id" in fields)) {
       throw new Error("A @model requires an id field");
     }
-    ["created", "modified"].forEach((fieldName) => {
+    fields["id"] = {
+      name: "id",
+      type: GraphQLID,
+      description: "Unique ID",
+      args: [],
+      resolve: defaultFieldResolver,
+      isDeprecated: false,
+    };
+    [("created", "modified")].forEach((fieldName) => {
       fields[fieldName] = {
         name: fieldName,
         type: ISODateScalar,
@@ -30,6 +39,7 @@ class ModelDirective extends SchemaDirectiveVisitor {
     });
   }
 }
+
 class UniqueIdDirective extends SchemaDirectiveVisitor {
   visitObject(type) {
     const { name, from } = this.args;
@@ -68,15 +78,15 @@ class RelationDirective extends SchemaDirectiveVisitor {
     const relation_field = `${field.name}_${typeName}_id${
       isList ? "s" : ""
     }`.toLowerCase();
-    console.log(relation_field);
+    //console.log(relation_field);
     field.resolve = async function (parent, _, { dataSources }, info) {
       const options = {
         typeName,
         id: parent[relation_field],
       };
-      console.log(options);
+      //console.log(options);
       const result = await dataSources.cosmosAPI.getItemById(options);
-      console.log(result);
+      //console.log(result);
       return result;
     };
     // const { url } = this.args;
