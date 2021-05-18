@@ -11,7 +11,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
-  uri: `${process.env.REACT_APP_API_URL}/api/query`,
+  uri: `${process.env.REACT_APP_API_URL || ""}/api/query`,
   cache: new InMemoryCache({}),
 });
 
