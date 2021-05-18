@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuthentication } from "./components/util/authentication";
 import "./App.css";
 import { ActionButton, Stack } from "@fluentui/react";
+import PostsList from "./components/PostsList";
 
 function App() {
   const { getUser } = useAuthentication();
@@ -21,7 +22,7 @@ function App() {
     return <p>Loading...</p>;
   }
   if (user) {
-    return <pre>{JSON.stringify(user, null, 2)}</pre>;
+    return <PostsList></PostsList>;
   }
   return (
     <div className="wrapper">
