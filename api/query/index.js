@@ -68,7 +68,8 @@ const server = new ApolloServer({
   //dataSources,
   context: async ({ request }) => {
     try {
-      const header = request.headers["x-ms-client-principal"] || "";
+      const header =
+        request.headers["x-ms-client-principal"] || process.env.DEV_COOKIE;
       const encoded = Buffer.from(header, "base64");
       const decoded = encoded.toString("ascii");
       const clientPrincipal = JSON.parse(decoded);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuthentication } from "./components/util/authentication";
 import "./App.css";
-import { Stack } from "@fluentui/react";
+import { ActionButton, Stack } from "@fluentui/react";
 
 function App() {
   const { getUser } = useAuthentication();
@@ -26,9 +26,9 @@ function App() {
   return (
     <div className="wrapper">
       <Stack horizontalAlign="center">
-        <h1>Todo App using Fluent UI & React</h1>
+        <h1>You must be logged in to access this app</h1>
         <Stack style={{ width: 300 }} gap={25}>
-          Add todo component... TodoList componets...
+          <ActionButton>Login</ActionButton>
         </Stack>
       </Stack>
     </div>

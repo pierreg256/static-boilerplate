@@ -6,14 +6,24 @@ import reportWebVitals from "./reportWebVitals";
 import { AuthenticationProvider } from "./components/util/authentication";
 import { CookiesProvider } from "react-cookie";
 import { Fabric } from "@fluentui/react";
+import { ApolloProvider } from "@apollo/client/react";
+
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+
+const client = new ApolloClient({
+  uri: `${process.env.REACT_APP_API_URL}/api/query`,
+  cache: new InMemoryCache({}),
+});
 
 ReactDOM.render(
   <React.StrictMode>
     <CookiesProvider>
       <AuthenticationProvider>
-        <Fabric>
-          <App />
-        </Fabric>
+        <ApolloProvider client={client}>
+          <Fabric>
+            <App />
+          </Fabric>
+        </ApolloProvider>
       </AuthenticationProvider>
     </CookiesProvider>
   </React.StrictMode>,
