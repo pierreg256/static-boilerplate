@@ -22,7 +22,16 @@ function App() {
     return <p>Loading...</p>;
   }
   if (user) {
-    return <PostsList></PostsList>;
+    return (
+      <div className="wrapper">
+        <Stack horizontalAlign="center">
+          <h1>Welcome user!</h1>
+          <Stack style={{ width: 300 }} gap={25}>
+            <PostsList></PostsList>;
+          </Stack>
+        </Stack>
+      </div>
+    );
   }
   return (
     <div className="wrapper">
