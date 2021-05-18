@@ -5,12 +5,15 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { AuthenticationProvider } from "./components/util/authentication";
 import { CookiesProvider } from "react-cookie";
+import { Fabric } from "@fluentui/react";
 
 ReactDOM.render(
   <React.StrictMode>
     <CookiesProvider>
       <AuthenticationProvider>
-        <App />
+        <Fabric>
+          <App />
+        </Fabric>
       </AuthenticationProvider>
     </CookiesProvider>
   </React.StrictMode>,

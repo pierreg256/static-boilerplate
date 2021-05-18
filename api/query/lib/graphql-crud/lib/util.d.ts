@@ -1,4 +1,4 @@
-import { GraphQLInputObjectType, GraphQLObjectType, GraphQLSchema } from 'graphql';
+import { GraphQLInputObjectType, GraphQLObjectType, GraphQLSchema } from "graphql";
 export declare const toInputObjectTypeName: (name: string) => string;
 export declare const isValidInputFieldType: (type: any) => boolean;
 export declare const getInputType: (typeName: string, schema: GraphQLSchema) => GraphQLInputObjectType;

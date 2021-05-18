@@ -12,7 +12,7 @@ import {
   StoreUpdateReturn,
 } from "./";
 import { cloneDeep } from "lodash";
-import { CosmosClient } from "@azure/cosmos";
+import { CosmosClient /*, User*/ } from "@azure/cosmos";
 import { createHash } from "crypto";
 
 export interface CosmosStoreOptions {
@@ -31,7 +31,7 @@ export class CosmosStore implements Store {
   constructor(options: CosmosStoreOptions) {
     this.client = new CosmosClient(options);
     this.options = options;
-    console.log("CosmosDB datasource initialized");
+    console.log("CosmosDB Store initialized");
   }
   public async findOne(props: StoreFindOneProps): Promise<StoreFindOneReturn> {
     /*const res = await this.db[props.type.name].findOne(
@@ -40,7 +40,8 @@ export class CosmosStore implements Store {
     */
     console.log("find one:", props);
     console.log("find one:", this.formatInput(props.where, props.type));
-    return this.formatOutput(null);
+    const res = await this.find(props)
+    return res && res.length>0 && this.formatOutput(res[0]);
   }
   public async find(props: StoreFindProps): Promise<[StoreFindReturn]> {
     /*const res = await this.db[props.type.name].find(
@@ -64,10 +65,24 @@ export class CosmosStore implements Store {
     return this.formatOutput(resources);
   }
   public async create(props: StoreCreateProps): Promise<StoreCreateReturn> {
-    console.log();
-    // const res = await this.db[props.type.name].insert(props.data);
-    // return this.formatOutput(res);
-    return this.formatOutput({});
+    const newItem = this.formatInput(props.data, props.type)
+    console.log("create:",this.options.options)
+    console.log("Create:", props);
+    console.log("Create:", newItem);
+
+    const { database } = await this.client.databases.createIfNotExists({
+      id: this.options.databaseName,
+    });
+    const { container } = await database.containers.createIfNotExists({
+      id: this.options.containerName,
+    });
+    const currentUserId = this.createUid('User', { _typeId: this.options.options.clientPrincipal.userId })
+    newItem.created_by = currentUserId
+    newItem.created = new Date()
+    newItem.modified_by = currentUserId
+    newItem.modified = new Date()
+    const { resource: createdItem } = await container.items.create(newItem);
+    return this.formatOutput(createdItem);
   }
   public async update(props: StoreUpdateProps): Promise<StoreUpdateReturn> {
     // const res = await this.db[props.type.name].update(

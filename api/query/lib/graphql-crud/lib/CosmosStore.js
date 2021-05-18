@@ -44,18 +44,25 @@ var CosmosStore = /** @class */ (function () {
     function CosmosStore(options) {
         this.client = new cosmos_1.CosmosClient(options);
         this.options = options;
-        console.log("CosmosDB datasource initialized");
+        console.log("CosmosDB Store initialized");
     }
     CosmosStore.prototype.findOne = function (props) {
         return __awaiter(this, void 0, void 0, function () {
+            var res;
             return __generator(this, function (_a) {
-                /*const res = await this.db[props.type.name].findOne(
-                  this.formatInput(props.where)
-                );
-                */
-                console.log("find one:", props);
-                console.log("find one:", this.formatInput(props.where, props.type));
-                return [2 /*return*/, this.formatOutput(null)];
+                switch (_a.label) {
+                    case 0:
+                        /*const res = await this.db[props.type.name].findOne(
+                          this.formatInput(props.where)
+                        );
+                        */
+                        console.log("find one:", props);
+                        console.log("find one:", this.formatInput(props.where, props.type));
+                        return [4 /*yield*/, this.find(props)];
+                    case 1:
+                        res = _a.sent();
+                        return [2 /*return*/, res && res.length > 0 && this.formatOutput(res[0])];
+                }
             });
         });
     };
@@ -95,11 +102,34 @@ var CosmosStore = /** @class */ (function () {
     };
     CosmosStore.prototype.create = function (props) {
         return __awaiter(this, void 0, void 0, function () {
+            var newItem, database, container, currentUserId, createdItem;
             return __generator(this, function (_a) {
-                console.log();
-                // const res = await this.db[props.type.name].insert(props.data);
-                // return this.formatOutput(res);
-                return [2 /*return*/, this.formatOutput({})];
+                switch (_a.label) {
+                    case 0:
+                        newItem = this.formatInput(props.data, props.type);
+                        console.log("create:", this.options.options);
+                        console.log("Create:", props);
+                        console.log("Create:", newItem);
+                        return [4 /*yield*/, this.client.databases.createIfNotExists({
+                                id: this.options.databaseName,
+                            })];
+                    case 1:
+                        database = (_a.sent()).database;
+                        return [4 /*yield*/, database.containers.createIfNotExists({
+                                id: this.options.containerName,
+                            })];
+                    case 2:
+                        container = (_a.sent()).container;
+                        currentUserId = this.createUid('User', { _typeId: this.options.options.clientPrincipal.userId });
+                        newItem.created_by = currentUserId;
+                        newItem.created = new Date();
+                        newItem.modified_by = currentUserId;
+                        newItem.modified = new Date();
+                        return [4 /*yield*/, container.items.create(newItem)];
+                    case 3:
+                        createdItem = (_a.sent()).resource;
+                        return [2 /*return*/, this.formatOutput(createdItem)];
+                }
             });
         });
     };

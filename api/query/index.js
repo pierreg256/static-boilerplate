@@ -46,7 +46,7 @@ const typeDefs = gql`
   type Post @model {
     text: String!
     #author_id: ID
-    #author: User @relation
+    author: User @relation
   }
 
   type Query {
@@ -65,10 +65,10 @@ const typeDefs = gql`
 const server = new ApolloServer({
   typeDefs,
   //resolvers,
-  dataSources,
+  //dataSources,
   context: async ({ request }) => {
     try {
-      const header = request.headers["x-ms-client-principal"];
+      const header = request.headers["x-ms-client-principal"] || "";
       const encoded = Buffer.from(header, "base64");
       const decoded = encoded.toString("ascii");
       const clientPrincipal = JSON.parse(decoded);
@@ -80,6 +80,9 @@ const server = new ApolloServer({
               key: process.env.COSMOS_KEY,
               databaseName: process.env.COSMOS_DB,
               containerName: process.env.COSMOS_CONTAINER,
+              options: {
+                clientPrincipal,
+              },
             }),
           },
         },

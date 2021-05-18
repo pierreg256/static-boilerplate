@@ -1,37 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { useAuthentication } from "./components/util/authentication";
-import logo from "./logo.svg";
 import "./App.css";
+import { Stack } from "@fluentui/react";
 
 function App() {
   const { getUser } = useAuthentication();
   const [user, setUser] = useState();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("fetch data");
       const user = await getUser();
-      console.log(user);
+      setUser(user);
+      setLoading(false);
     };
 
     fetchData();
   }, []);
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if (user) {
+    return <pre>{JSON.stringify(user, null, 2)}</pre>;
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="wrapper">
+      <Stack horizontalAlign="center">
+        <h1>Todo App using Fluent UI & React</h1>
+        <Stack style={{ width: 300 }} gap={25}>
+          Add todo component... TodoList componets...
+        </Stack>
+      </Stack>
     </div>
   );
 }
