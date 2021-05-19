@@ -32,7 +32,7 @@ function PostsList() {
       </Stack>
     );
   return (
-    <Stack gap={10}>
+    <Stack childrenGap={10}>
       <Label>Posts</Label>
       {data.posts &&
         data.posts.length > 0 &&

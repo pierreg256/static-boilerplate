@@ -40,8 +40,8 @@ export class CosmosStore implements Store {
     */
     console.log("find one:", props);
     console.log("find one:", this.formatInput(props.where, props.type));
-    const res = await this.find(props)
-    return res && res.length>0 && this.formatOutput(res[0]);
+    const res = await this.find(props);
+    return res && res.length > 0 && this.formatOutput(res[0]);
   }
   public async find(props: StoreFindProps): Promise<[StoreFindReturn]> {
     /*const res = await this.db[props.type.name].find(
@@ -65,8 +65,8 @@ export class CosmosStore implements Store {
     return this.formatOutput(resources);
   }
   public async create(props: StoreCreateProps): Promise<StoreCreateReturn> {
-    const newItem = this.formatInput(props.data, props.type)
-    console.log("create:",this.options.options)
+    const newItem = this.formatInput(props.data, props.type);
+    console.log("create:", this.options.options);
     console.log("Create:", props);
     console.log("Create:", newItem);
 
@@ -76,11 +76,13 @@ export class CosmosStore implements Store {
     const { container } = await database.containers.createIfNotExists({
       id: this.options.containerName,
     });
-    const currentUserId = this.createUid('User', { _typeId: this.options.options.clientPrincipal.userId })
-    newItem.created_by = currentUserId
-    newItem.created = new Date()
-    newItem.modified_by = currentUserId
-    newItem.modified = new Date()
+    const currentUserId = this.createUid("User", {
+      _typeId: this.options.options.clientPrincipal.userId,
+    });
+    newItem.created_by = currentUserId;
+    newItem.created = new Date();
+    newItem.modified_by = currentUserId;
+    newItem.modified = new Date();
     const { resource: createdItem } = await container.items.create(newItem);
     return this.formatOutput(createdItem);
   }
@@ -98,11 +100,20 @@ export class CosmosStore implements Store {
     return true;
   }
   public async remove(props: StoreRemoveProps): Promise<StoreRemoveReturn> {
-    // const res = await this.db[props.type.name].remove(
-    //   this.formatInput(props.where)
-    // );
-    // return res.n > 0;
-    return true;
+    //const newItem = this.formatInput(props.data, props.type);
+    console.log("remove:", this.formatInput(props.where, props.type));
+    console.log("remove:", props);
+    const { database } = await this.client.databases.createIfNotExists({
+      id: this.options.databaseName,
+    });
+    const { container } = await database.containers.createIfNotExists({
+      id: this.options.containerName,
+    });
+    const res = await container
+      .item(this.formatInput(props.where, props.type).id)
+      .delete();
+    console.log("res:", res);
+    return false;
   }
   // Adds an `id` field to the output
   private formatOutput(object) {

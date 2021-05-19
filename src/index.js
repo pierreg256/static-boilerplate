@@ -5,15 +5,19 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { AuthenticationProvider } from "./components/util/authentication";
 import { CookiesProvider } from "react-cookie";
-import { Fabric } from "@fluentui/react";
+import { Fabric, initializeIcons } from "@fluentui/react";
 import { ApolloProvider } from "@apollo/client/react";
 
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+
+initializeIcons();
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_API_URL || ""}/api/query`,
   cache: new InMemoryCache({}),
 });
+
+console.log("url:", process.env.REACT_APP_API_URL || "");
 
 ReactDOM.render(
   <React.StrictMode>

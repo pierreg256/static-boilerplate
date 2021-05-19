@@ -36,6 +36,11 @@ const typeDefs = gql`
     authenticated
   }
 
+  type Todo @model {
+    text: String!
+    owner_id: ID!
+  }
+
   type User @model {
     nick_name: String
     birthday: Date

@@ -120,7 +120,9 @@ var CosmosStore = /** @class */ (function () {
                             })];
                     case 2:
                         container = (_a.sent()).container;
-                        currentUserId = this.createUid('User', { _typeId: this.options.options.clientPrincipal.userId });
+                        currentUserId = this.createUid("User", {
+                            _typeId: this.options.options.clientPrincipal.userId,
+                        });
                         newItem.created_by = currentUserId;
                         newItem.created = new Date();
                         newItem.modified_by = currentUserId;
@@ -152,12 +154,31 @@ var CosmosStore = /** @class */ (function () {
     };
     CosmosStore.prototype.remove = function (props) {
         return __awaiter(this, void 0, void 0, function () {
+            var database, container, res;
             return __generator(this, function (_a) {
-                // const res = await this.db[props.type.name].remove(
-                //   this.formatInput(props.where)
-                // );
-                // return res.n > 0;
-                return [2 /*return*/, true];
+                switch (_a.label) {
+                    case 0:
+                        //const newItem = this.formatInput(props.data, props.type);
+                        console.log("remove:", this.formatInput(props.where, props.type));
+                        console.log("remove:", props);
+                        return [4 /*yield*/, this.client.databases.createIfNotExists({
+                                id: this.options.databaseName,
+                            })];
+                    case 1:
+                        database = (_a.sent()).database;
+                        return [4 /*yield*/, database.containers.createIfNotExists({
+                                id: this.options.containerName,
+                            })];
+                    case 2:
+                        container = (_a.sent()).container;
+                        return [4 /*yield*/, container
+                                .item(this.formatInput(props.where, props.type).id)
+                                .delete()];
+                    case 3:
+                        res = _a.sent();
+                        console.log("res:", res);
+                        return [2 /*return*/, false];
+                }
             });
         });
     };
